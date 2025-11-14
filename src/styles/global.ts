@@ -42,9 +42,9 @@ export const globalStyles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
+    padding: 24,
+    borderRadius: 20,
+    marginBottom: 24,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },

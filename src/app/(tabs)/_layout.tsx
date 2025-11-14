@@ -61,11 +61,11 @@ export default function TabLayout() {
             }}
           />
           <Tabs.Screen
-            name="tela5"
+            name="login"
             options={{
-              title: "Tela 5",
+              title: "Login",
               tabBarIcon: ({ color }) => (
-                <TabBarIcon name="file" color={color} />
+                <TabBarIcon name="user" color={color} />
               ),
             }}
           />
