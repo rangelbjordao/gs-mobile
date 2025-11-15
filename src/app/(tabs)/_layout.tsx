@@ -43,20 +43,20 @@ export default function TabLayout() {
             }}
           />
           <Tabs.Screen
+            name="metasDiarias"
+            options={{
+              title: "Metas",
+              tabBarIcon: ({ color }) => (
+                <TabBarIcon name="list-ol" color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
             name="estatisticas"
             options={{
               title: "Estatísticas",
               tabBarIcon: ({ color }) => (
                 <TabBarIcon name="bar-chart" color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="tela4"
-            options={{
-              title: "Tela 4",
-              tabBarIcon: ({ color }) => (
-                <TabBarIcon name="file" color={color} />
               ),
             }}
           />

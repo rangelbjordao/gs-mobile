@@ -10,11 +10,12 @@ export const globalStyles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 12,
+    marginBottom: 20,
     textAlign: "center",
   },
   subtitle: {
     fontSize: 18,
+    marginTop: 24,
     fontWeight: "600",
     marginBottom: 12,
     textAlign: "center",

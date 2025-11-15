@@ -1,66 +1,79 @@
-import CardMeta from "@/components/Metas/CardMeta";
+import CardMetasDiaria from "@/components/Inicio/CardMetasDiaria";
+import CardProgresso from "@/components/Inicio/CardProgresso";
+import ProximasAtividades, {
+  Atividade,
+} from "@/components/Inicio/ProximasAtividades";
 import { globalStyles } from "@/styles/global";
-import { useState } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { ScrollView, Text } from "react-native";
 
-const MetasScreen = () => {
-  const [metas, setMetas] = useState({
-    trabalho: new Date(),
-    lazer: new Date(),
-    sono: new Date(),
-    atividadeFisica: new Date(),
+type Categorias = "work" | "leisure" | "sleep" | "exercise";
+
+const HomeScreen = () => {
+  const [atividades, setAtividades] = useState<Atividade[]>([
+    {
+      id: "1",
+      titulo: "Trabalho",
+      horarioInicio: new Date(),
+      horarioFim: new Date(),
+      categoria: "work",
+      completed: false,
+    },
+    {
+      id: "2",
+      titulo: "Exercício",
+      horarioInicio: new Date(),
+      horarioFim: new Date(),
+      categoria: "exercise",
+      completed: true,
+    },
+    {
+      id: "3",
+      titulo: "Lazer",
+      horarioInicio: new Date(),
+      horarioFim: new Date(),
+      categoria: "leisure",
+      completed: false,
+    },
+  ]);
+
+  const [metas, setMetas] = useState<Record<Categorias, Date>>({
+    work: new Date(new Date().setHours(8, 0)),
+    exercise: new Date(new Date().setHours(1, 0)),
+    leisure: new Date(new Date().setHours(2, 0)),
+    sleep: new Date(new Date().setHours(7, 0)),
   });
 
-  const handleChange = (campo: keyof typeof metas, valor: Date) => {
-    setMetas((prev) => ({ ...prev, [campo]: valor }));
+  const toggleComplete = (id: string) => {
+    setAtividades((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, completed: true } : a))
+    );
   };
 
-  const salvarMetas = async () => {
-    try {
-      Alert.alert("Metas salvas com sucesso!");
-    } catch (error) {
-      console.error("Erro ao salvar metas:", error);
-      Alert.alert(
-        "Erro",
-        "Não foi possível salvar suas metas. Tente novamente."
-      );
-    }
-  };
+  const todayActivities = atividades.filter((a) => !a.completed);
+  const completedActivities = atividades.filter((a) => a.completed);
 
   return (
     <ScrollView contentContainerStyle={globalStyles.container}>
-      <Text style={globalStyles.title}>Minhas Metas</Text>
-      <Text style={globalStyles.subtitle}>(horas/dia)</Text>
+      <Text style={globalStyles.title}>Olá, Usuário!</Text>
 
-      <CardMeta
-        titulo="Trabalho"
-        valor={metas.trabalho}
-        aoMudar={(hora) => handleChange("trabalho", hora)}
+      <Text style={globalStyles.subtitle}>Como está seu progresso hoje?</Text>
+
+      <CardProgresso
+        completed={completedActivities.length}
+        total={atividades.length}
       />
 
-      <CardMeta
-        titulo="Lazer"
-        valor={metas.lazer}
-        aoMudar={(hora) => handleChange("lazer", hora)}
+      <Text style={globalStyles.subtitle}>Próximas Atividades</Text>
+      <ProximasAtividades
+        atividades={todayActivities}
+        toggleComplete={toggleComplete}
       />
 
-      <CardMeta
-        titulo="Sono"
-        valor={metas.sono}
-        aoMudar={(hora) => handleChange("sono", hora)}
-      />
-
-      <CardMeta
-        titulo="Atividade Física"
-        valor={metas.atividadeFisica}
-        aoMudar={(hora) => handleChange("atividadeFisica", hora)}
-      />
-
-      <TouchableOpacity style={globalStyles.button} onPress={salvarMetas}>
-        <Text style={globalStyles.buttonText}>Salvar Metas</Text>
-      </TouchableOpacity>
+      <Text style={globalStyles.subtitle}>Suas Metas Diárias</Text>
+      <CardMetasDiaria metas={metas} />
     </ScrollView>
   );
 };
 
-export default MetasScreen;
+export default HomeScreen;
