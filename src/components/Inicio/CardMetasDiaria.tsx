@@ -33,12 +33,12 @@ export default CardMetasDiaria;
 const styles = StyleSheet.create({
   metaCard: {
     backgroundColor: "#fff",
-    borderRadius: 20,
     padding: 16,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    elevation: 2,
+    borderBottomWidth: 1,
+    borderColor: "#cccccc",
   },
   metaTitle: {
     fontSize: 16,
