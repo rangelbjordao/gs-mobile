@@ -1,5 +1,9 @@
+"use client";
+
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Tabs } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Tabs, useRouter } from "expo-router";
+import { useEffect } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 function TabBarIcon({
@@ -20,6 +24,18 @@ function TabBarIcon({
 }
 
 export default function TabLayout() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await AsyncStorage.getItem("@token");
+      if (!token) {
+        router.replace("/login");
+      }
+    };
+    checkToken();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
@@ -66,15 +82,6 @@ export default function TabLayout() {
               title: "Perfil",
               tabBarIcon: ({ color }) => (
                 <TabBarIcon name="user" color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="login"
-            options={{
-              title: "Login",
-              tabBarIcon: ({ color }) => (
-                <TabBarIcon name="lock" color={color} />
               ),
             }}
           />

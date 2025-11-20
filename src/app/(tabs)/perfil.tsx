@@ -1,5 +1,7 @@
 import { globalStyles } from "@/styles/global";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -16,6 +18,7 @@ import {
 const PerfilScreen = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [userName, setUserName] = useState("Usuário");
+  const router = useRouter();
 
   const {
     register,
@@ -85,7 +88,14 @@ const PerfilScreen = () => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.logoutButton}>
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={async () => {
+          await AsyncStorage.removeItem("@token");
+          Alert.alert("", "Você saiu da conta.");
+          router.replace("/login");
+        }}
+      >
         <Ionicons name="log-out-outline" size={20} color="#b91c1c" />
         <Text style={styles.logoutText}>Sair da conta</Text>
       </TouchableOpacity>
