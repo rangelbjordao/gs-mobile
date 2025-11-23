@@ -1,59 +1,38 @@
 import { globalStyles } from "@/styles/global";
+import { Atividade, categoriaCores } from "@/types/goalTypes";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { FormData } from "./FormularioAtividade";
-
-type Categorias =
-  | "work"
-  | "break"
-  | "exercise"
-  | "leisure"
-  | "family"
-  | "meal"
-  | "sleep";
-
-type Atividade = FormData & {
-  id: number;
-  completed: boolean;
-};
 
 type Props = {
   atividades: Atividade[];
   onToggle: (id: number) => void;
+  onDelete?: (id: number) => void;
 };
 
-const categoriaLabels: Record<Categorias, string> = {
-  work: "Trabalho",
-  break: "Pausa",
-  exercise: "Exercício",
-  leisure: "Lazer",
-  family: "Família",
-  meal: "Refeição",
-  sleep: "Sono",
+const formatarHorario = (dataHora: string | undefined): string => {
+  if (!dataHora) {
+    return "--:--";
+  }
+
+  if (dataHora.length >= 5) {
+    return dataHora.substring(0, 5);
+  }
+
+  return dataHora;
 };
 
-const categoriaCores: Record<Categorias, string> = {
-  work: "#3b82f6",
-  break: "#eab308",
-  exercise: "#22c55e",
-  leisure: "#a855f7",
-  family: "#fb923c",
-  meal: "#ef4444",
-  sleep: "#1e3a8a",
-};
+const ListaAtividades = ({ atividades, onToggle, onDelete }: Props) => {
+  const atividadesOrdenadas = [...atividades].sort((a, b) => {
+    if (a.completed !== b.completed) return a.completed ? 1 : -1;
+    return (a.horarioInicio || "00:00:00").localeCompare(
+      b.horarioInicio || "00:00:00"
+    );
+  });
 
-const formatarHorario = (date: Date) => {
-  return `${date.getHours().toString().padStart(2, "0")}:${date
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}`;
-};
-
-const ListaAtividades = ({ atividades, onToggle }: Props) => {
   return (
     <>
-      {atividades.map((atividade) => (
+      {atividadesOrdenadas.map((atividade) => (
         <View key={atividade.id} style={globalStyles.card}>
           <View
             style={[
@@ -66,31 +45,38 @@ const ListaAtividades = ({ atividades, onToggle }: Props) => {
             <Text
               style={[
                 globalStyles.cardTitle,
-                atividade.completed && styles.tituloConcluido,
+                atividade.completed && styles.categoriaConcluido,
               ]}
             >
-              {atividade.titulo}
+              {atividade.categoria}
             </Text>
 
-            <TouchableOpacity
-              style={styles.botaoCheck}
-              onPress={() => onToggle(atividade.id)}
-            >
-              <Ionicons
-                name={atividade.completed ? "checkbox" : "square-outline"}
-                size={28}
-                color={atividade.completed ? "#22c55e" : "#64748b"}
-              />
-            </TouchableOpacity>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              {onDelete && (
+                <TouchableOpacity
+                  style={{ marginRight: 8 }}
+                  onPress={() => onDelete(atividade.id)}
+                >
+                  <Ionicons name="trash-outline" size={24} color="#ef4444" />
+                </TouchableOpacity>
+              )}
+
+              <TouchableOpacity
+                style={styles.botaoCheck}
+                onPress={() => onToggle(atividade.id)}
+              >
+                <Ionicons
+                  name={atividade.completed ? "checkbox" : "square-outline"}
+                  size={28}
+                  color={atividade.completed ? "#22c55e" : "#64748b"}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <Text>
             {formatarHorario(atividade.horarioInicio)} -{" "}
             {formatarHorario(atividade.horarioFim)}
-          </Text>
-
-          <Text style={styles.categoriaTexto}>
-            Categoria: {categoriaLabels[atividade.categoria]}
           </Text>
         </View>
       ))}
@@ -116,11 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  categoriaTexto: {
-    fontSize: 12,
-    marginTop: 4,
-  },
-  tituloConcluido: {
+  categoriaConcluido: {
     textDecorationLine: "line-through",
     opacity: 0.5,
   },

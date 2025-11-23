@@ -1,24 +1,30 @@
 import { globalStyles } from "@/styles/global";
 import { StyleSheet, Text, View } from "react-native";
 
-const CardResumo = () => {
+type CardResumoProps = {
+  total: number;
+  concluido: number;
+  pendente: number;
+};
+
+const CardResumo = ({ total, concluido, pendente }: CardResumoProps) => {
   return (
     <View style={globalStyles.card}>
       <Text style={globalStyles.cardTitle}>Resumo de Atividades</Text>
 
       <View style={styles.row}>
         <View style={styles.col}>
-          <Text style={styles.value}>32</Text>
+          <Text style={styles.value}>{total}</Text>
           <Text style={styles.label}>Atividades</Text>
         </View>
 
         <View style={styles.col}>
-          <Text style={styles.value}>12</Text>
+          <Text style={styles.value}>{concluido}</Text>
           <Text style={styles.label}>Concluídas</Text>
         </View>
 
         <View style={styles.col}>
-          <Text style={styles.value}>20</Text>
+          <Text style={styles.value}>{pendente}</Text>
           <Text style={styles.label}>Pendentes</Text>
         </View>
       </View>

@@ -38,7 +38,7 @@ const CardMeta: React.FC<CardMetaProps> = ({ titulo, valor, aoMudar }) => {
           value={valor}
           mode="time"
           is24Hour
-          display="spinner"
+          display="default"
           onChange={selecionarHora}
         />
       )}

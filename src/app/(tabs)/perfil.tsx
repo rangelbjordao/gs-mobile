@@ -2,7 +2,7 @@ import { globalStyles } from "@/styles/global";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Alert,
@@ -24,12 +24,24 @@ const PerfilScreen = () => {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({
-    defaultValues: { name: userName },
+    defaultValues: { name: "Usuário" },
   });
 
-  function onSubmit(data: { name: string }) {
+  useEffect(() => {
+    const carregarNome = async () => {
+      const nomeSalvo = await AsyncStorage.getItem("@userName");
+      if (nomeSalvo) {
+        setUserName(nomeSalvo);
+        reset({ name: nomeSalvo });
+      }
+    };
+    carregarNome();
+  }, [reset]);
+
+  async function onSubmit(data: { name: string }) {
     const formattedName = data.name.trim().replace(/\s+/g, " ");
 
     if (formattedName.length === 0) {
@@ -39,6 +51,7 @@ const PerfilScreen = () => {
     setUserName(formattedName);
     setValue("name", formattedName);
     setIsEditingProfile(false);
+    await AsyncStorage.setItem("@userName", formattedName);
 
     Alert.alert("Sucesso!", "Nome atualizado.");
   }

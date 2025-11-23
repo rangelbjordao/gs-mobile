@@ -1,4 +1,5 @@
 import { globalStyles } from "@/styles/global";
+import { CategoriaBackend, categoriaLabels } from "@/types/goalTypes";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -7,41 +8,20 @@ import {
   Platform,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 
-type Categorias =
-  | "work"
-  | "break"
-  | "exercise"
-  | "leisure"
-  | "family"
-  | "meal"
-  | "sleep";
-
-const categoriaLabels: Record<Categorias, string> = {
-  work: "Trabalho",
-  break: "Pausa",
-  exercise: "Exercício",
-  leisure: "Lazer",
-  family: "Família",
-  meal: "Refeição",
-  sleep: "Sono",
-};
-
-const categoriasLista = Object.keys(categoriaLabels) as Categorias[];
+const categoriasLista = Object.keys(categoriaLabels) as CategoriaBackend[];
 
 export type FormData = {
-  titulo: string;
-  horarioInicio: Date;
-  horarioFim: Date;
-  categoria: Categorias;
+  horarioInicio: string;
+  horarioFim: string;
+  categoria: CategoriaBackend;
 };
 
 type Props = {
-  onSubmit: (data: FormData) => void;
+  onSubmit: (data: FormData) => Promise<void>;
 };
 
 const FormularioAtividade = ({ onSubmit }: Props) => {
@@ -56,22 +36,18 @@ const FormularioAtividade = ({ onSubmit }: Props) => {
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      categoria: "work",
+      categoria: "TRABALHO",
     },
   });
 
-  const formatarHorario = (date: Date) => {
-    return `${date.getHours().toString().padStart(2, "0")}:${date
-      .getMinutes()
-      .toString()
-      .padStart(2, "0")}`;
+  const formatarHorarioParaExibir = (horarioString: string) => {
+    return horarioString.substring(0, 5);
   };
 
   const enviar = async (data: FormData) => {
     try {
       await onSubmit(data);
       reset();
-      Alert.alert("Atividade salva com sucesso!");
     } catch (error) {
       console.error("Erro ao salvar Atividade:", error);
       Alert.alert(
@@ -83,24 +59,6 @@ const FormularioAtividade = ({ onSubmit }: Props) => {
 
   return (
     <View>
-      <Text>Título</Text>
-      <Controller
-        control={control}
-        name="titulo"
-        rules={{ required: "Título é obrigatório" }}
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={globalStyles.input}
-            placeholder="Nova atividade"
-            value={value}
-            onChangeText={onChange}
-          />
-        )}
-      />
-      {errors.titulo && (
-        <Text style={styles.errorText}>{errors.titulo.message}</Text>
-      )}
-
       <Text>Categoria</Text>
       <Controller
         control={control}
@@ -157,20 +115,33 @@ const FormularioAtividade = ({ onSubmit }: Props) => {
             >
               <Text>
                 {value
-                  ? formatarHorario(value)
+                  ? formatarHorarioParaExibir(value)
                   : "Selecione o horário de início"}
               </Text>
             </TouchableOpacity>
 
             {mostrarPickerInicio && (
               <DateTimePicker
-                value={value || new Date()}
+                value={value ? new Date(`2000-01-01T${value}`) : new Date()}
                 mode="time"
                 is24Hour={true}
                 display="spinner"
                 onChange={(_, selectedDate) => {
                   setmostrarPickerInicio(Platform.OS === "ios");
-                  if (selectedDate) onChange(selectedDate);
+
+                  if (selectedDate) {
+                    const timeString = selectedDate.toLocaleTimeString(
+                      "en-US",
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false,
+                      }
+                    );
+
+                    onChange(timeString);
+                  }
                 }}
               />
             )}
@@ -190,19 +161,34 @@ const FormularioAtividade = ({ onSubmit }: Props) => {
               onPress={() => setmostrarPickerFim(true)}
             >
               <Text>
-                {value ? formatarHorario(value) : "Selecione o horário de fim"}
+                {value
+                  ? formatarHorarioParaExibir(value)
+                  : "Selecione o horário de fim"}
               </Text>
             </TouchableOpacity>
 
             {mostrarPickerFim && (
               <DateTimePicker
-                value={value || new Date()}
+                value={value ? new Date(`2000-01-01T${value}`) : new Date()}
                 mode="time"
                 is24Hour={true}
                 display="spinner"
                 onChange={(_, selectedDate) => {
                   setmostrarPickerFim(Platform.OS === "ios");
-                  if (selectedDate) onChange(selectedDate);
+
+                  if (selectedDate) {
+                    const timeString = selectedDate.toLocaleTimeString(
+                      "en-US",
+                      {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false,
+                      }
+                    );
+
+                    onChange(timeString);
+                  }
                 }}
               />
             )}

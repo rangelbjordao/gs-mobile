@@ -1,7 +1,6 @@
 import CardMeta from "@/components/Metas/CardMeta";
-import { criarMeta, GoalPayload } from "@/services/metasService";
 import { globalStyles } from "@/styles/global";
-import { format } from "date-fns";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity } from "react-native";
 
@@ -17,52 +16,10 @@ const MetasScreen = () => {
     setMetas((prev) => ({ ...prev, [campo]: valor }));
   };
 
-  const USER_ID = 1;
-  const FREQUENCY: "DIARIA" = "DIARIA";
-  const UNIT_MEASURE = "MINUTES";
-
   const salvarMetas = async () => {
     try {
-      const metasPayload: GoalPayload[] = [
-        {
-          user: { id: USER_ID },
-          category: "TRABALHO",
-          frequency: FREQUENCY,
-          unitMeasure: UNIT_MEASURE,
-          startDate: format(metas.trabalho, "yyyy-MM-dd"),
-          endDate: null,
-        },
-        {
-          user: { id: USER_ID },
-          category: "LAZER",
-          frequency: FREQUENCY,
-          unitMeasure: UNIT_MEASURE,
-          startDate: format(metas.lazer, "yyyy-MM-dd"),
-          endDate: null,
-        },
-        {
-          user: { id: USER_ID },
-          category: "SONO",
-          frequency: FREQUENCY,
-          unitMeasure: UNIT_MEASURE,
-          startDate: format(metas.sono, "yyyy-MM-dd"),
-          endDate: null,
-        },
-        {
-          user: { id: USER_ID },
-          category: "EXERCICIO",
-          frequency: FREQUENCY,
-          unitMeasure: UNIT_MEASURE,
-          startDate: format(metas.atividadeFisica, "yyyy-MM-dd"),
-          endDate: null,
-        },
-      ];
-
-      for (const meta of metasPayload) {
-        await criarMeta(meta);
-      }
-
-      Alert.alert("Sucesso", "Metas salvas com sucesso!");
+      await AsyncStorage.setItem("@metas", JSON.stringify(metas));
+      Alert.alert("Metas salvas com sucesso!");
     } catch (error) {
       console.error("Erro ao salvar metas:", error);
       Alert.alert(

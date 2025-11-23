@@ -12,7 +12,7 @@ const CardProgresso = ({ completed, total }: Props) => {
 
   return (
     <View style={styles.progressCard}>
-      <Text style={styles.progressTitle}>Progresso Diário</Text>
+      <Text style={styles.progressTitle}>Progresso</Text>
       <Text style={styles.progressText}>
         {completed} de {total} atividades concluídas
       </Text>

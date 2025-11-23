@@ -1,34 +1,30 @@
-import FormularioAtividade, {
-  FormData,
-} from "@/components/Plantejamento/FormularioAtividade";
+import FormularioAtividade from "@/components/Plantejamento/FormularioAtividade";
 import ListaAtividades from "@/components/Plantejamento/ListaAtividades";
+import { useAtividades } from "@/hooks/useAtividades";
 import { globalStyles } from "@/styles/global";
-import React, { useState } from "react";
-import { ScrollView, Text, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 
-export type Atividade = FormData & {
-  id: number;
-  completed: boolean;
-};
-
-export default function PlanejamentoDiarioScreen() {
+const PlanejamentoDiarioScreen = () => {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
-  const [atividades, setAtividades] = useState<Atividade[]>([]);
+  const {
+    atividades,
+    isLoading,
+    carregarAtividades,
+    adicionarAtividade,
+    alternarConcluida,
+    deletarAtividade,
+  } = useAtividades();
 
-  const adicionarAtividade = (data: FormData) => {
-    setAtividades((prev) => [
-      ...prev,
-      { id: Date.now(), completed: false, ...data },
-    ]);
-    setMostrarFormulario(false);
-  };
-
-  const alternarConcluida = (id: number) => {
-    setAtividades((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, completed: !a.completed } : a))
-    );
-  };
+  useEffect(() => {
+    carregarAtividades();
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={globalStyles.container}>
@@ -47,7 +43,25 @@ export default function PlanejamentoDiarioScreen() {
         <FormularioAtividade onSubmit={adicionarAtividade} />
       )}
 
-      <ListaAtividades atividades={atividades} onToggle={alternarConcluida} />
+      {isLoading ? (
+        <ActivityIndicator
+          size="large"
+          color="#0000ff"
+          style={{ marginTop: 20 }}
+        />
+      ) : atividades.length === 0 ? (
+        <Text style={{ marginTop: 20, fontSize: 16 }}>
+          Nenhuma meta encontrada. Adicione uma para começar!
+        </Text>
+      ) : (
+        <ListaAtividades
+          atividades={atividades}
+          onToggle={alternarConcluida}
+          onDelete={deletarAtividade}
+        />
+      )}
     </ScrollView>
   );
-}
+};
+
+export default PlanejamentoDiarioScreen;
